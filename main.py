@@ -35,7 +35,7 @@ size_x = size_y = 10
 d_x, d_y = 0, -size_y
 
 # List containing all segments of the snake
-snake = [(250, 250), (250, 260), (250, 270)]
+snake = [(screen_x // 2, screen_y // 2), (screen_x // 2, screen_y // 2 - size_y), (screen_x // 2, screen_y // 2 - (2 * size_y))]
 food_x, food_y = gen_food(snake, screen_x, screen_y)
 eaten = False
 score = 0
@@ -63,10 +63,17 @@ while not gameover:
     # New segment position
     x, y = snake[len(snake) - 1]
     new_x, new_y = x + d_x, y + d_y
+    print(new_x, new_y)
 
     # Check collisions
-    if new_x == food_x and new_y == food_y:
+    if new_x == food_x and new_y == food_y:  # Food
         eaten = True
+    elif new_x == 0 or new_x == screen_x - size_x or new_y == 0 or new_y == screen_y - size_y:  # Border
+        gameover = True
+    if d_x != 0 or d_y != 0:
+        for x, y in snake:  # Snake
+            if new_x == x and new_y == y:
+                gameover = True
 
     snake.append((new_x, new_y))
 
