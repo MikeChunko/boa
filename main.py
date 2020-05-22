@@ -8,8 +8,8 @@ def gen_food(snake, size_x, size_y):
     # Generate new coords until one doesn't cause a collision
     while True:
         x, y = (
-            random.randint(1, (size_x - 1) // 10),
-            random.randint(1, (size_y - 1) // 10),
+            random.randint(1, screen_x // 10 - 2),
+            random.randint(1, screen_y // 10 - 2),
         )
         x, y = 10 * x, 10 * y
         sentinel = True
@@ -36,6 +36,7 @@ d_x, d_y = 0, -size_y
 
 # List containing all segments of the snake
 snake = [(screen_x // 2, screen_y // 2), (screen_x // 2, screen_y // 2 - size_y), (screen_x // 2, screen_y // 2 - (2 * size_y))]
+
 food_x, food_y = gen_food(snake, screen_x, screen_y)
 eaten = False
 score = 0
@@ -63,7 +64,6 @@ while not gameover:
     # New segment position
     x, y = snake[len(snake) - 1]
     new_x, new_y = x + d_x, y + d_y
-    print(new_x, new_y)
 
     # Check collisions
     if new_x == food_x and new_y == food_y:  # Food
