@@ -39,9 +39,9 @@ snake = [(250, 250), (250, 260), (250, 270)]
 food_x, food_y = gen_food(snake, screen_x, screen_y)
 eaten = False
 score = 0
+gameover = False
 
 # Main loop
-gameover = False
 while not gameover:
 
     # Handle actions
@@ -84,12 +84,19 @@ while not gameover:
         pyg.draw.rect(screen, green, [x, y, size_x, size_y])
     pyg.draw.rect(screen, red, [food_x, food_y, size_x, size_y])
 
+    for i in range(0, screen_x // 10):  # Border
+        pyg.draw.rect(screen, blue, [i * 10, 0, size_x, size_y])
+        pyg.draw.rect(screen, blue, [i * 10, screen_y - size_y, size_x, size_y])
+        pyg.draw.rect(screen, blue, [0, i * 10, size_x, size_x])
+        pyg.draw.rect(screen, blue, [screen_x - size_x, i * 10, size_x, size_y])
+
     textsurface = font.render("Score: {}".format(score), False, (255, 255, 255))
     screen.blit(textsurface, (0, 0))
 
     pyg.display.update()
     clock.tick(15)
 
+# Game over state
 while True:
 
     for event in pyg.event.get():
@@ -101,8 +108,17 @@ while True:
     for x, y in snake:
         pyg.draw.rect(screen, green, [x, y, size_x, size_y])
     pyg.draw.rect(screen, red, [food_x, food_y, size_x, size_y])
+
+    for i in range(0, screen_x // 10):  # Border
+        pyg.draw.rect(screen, blue, [i * 10, 0, size_x, size_y])
+        pyg.draw.rect(screen, blue, [i * 10, screen_y - size_y, size_x, size_y])
+        pyg.draw.rect(screen, blue, [0, i * 10, size_x, size_x])
+        pyg.draw.rect(screen, blue, [screen_x - size_x, i * 10, size_x, size_y])
+
     textsurface = font.render(
         "Game Over! Score: {}".format(score), False, (255, 255, 255)
     )
     screen.blit(textsurface, (screen_x // 2 - 40, screen_y // 2))
+
     pyg.display.update()
+    clock.tick(15)
