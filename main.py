@@ -46,6 +46,51 @@ def display(screen, snake, food_x, food_y):
         pyg.draw.rect(screen, blue, [screen_x - size_x, i, size_x, size_y])
 
 
+# Return 3 tuples, each holding a boolean value in the order (Left, Right, Up, Down)
+# First tuple says if there is a border adjacent to the snake head in that direction
+# Second tuple says if there is a segment adjacent to the snake head in that direction
+# Third tuple says if there is food in that direction
+def get_features(snake, food_x, food_y):
+    b_l = b_r = b_u = b_d = s_l = s_r = s_u = s_d = f_u = f_l = f_r = f_d = False
+    x, y = snake[-1]
+
+    # Border
+    if x == size_x:
+        b_l = True
+    elif x == screen_x - (2 * size_x):
+        b_r = True
+
+    if y == size_y:
+        b_u = True
+    elif y == screen_y - (2 * size_y):
+        b_d = True
+
+    # Segments
+    for x_, y_ in snake[:-1]:
+        if x_ + size_x == x:
+            s_l = True
+        elif x_ - size_x == x:
+            s_r = True
+
+        if y_ + size_y == y:
+            s_u = True
+        elif y_ - size_y == y:
+            s_d = True
+
+    # Food
+    if food_x > x:
+        f_r = True
+    elif food_x < x:
+        f_l = True
+
+    if food_y > y:
+        f_d = True
+    elif food_y < y:
+        f_u = True
+
+    return (b_l, b_r, b_u, b_d), (s_l, s_r, s_u, s_d), (f_l, f_r, f_u, f_d)
+
+
 def run_game():
     # List containing all segments of the snake
     snake = [(screen_x // 2, screen_y // 2),
@@ -83,7 +128,7 @@ def run_game():
                         d_x, d_y = 0, size_y
 
         # New segment position
-        x, y = snake[len(snake) - 1]
+        x, y = snake[-1]
         new_x, new_y = x + d_x, y + d_y
 
         # Check collisions
