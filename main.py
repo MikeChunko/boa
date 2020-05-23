@@ -102,8 +102,10 @@ def run_game():
         if eaten:
             food_x, food_y = gen_food(snake, size_x, size_y, screen_x, screen_y)
             eaten = False
-            score += 10
+            score += 100
         else:
+            if score > 0:
+                score -= 1
             snake.pop(0)
 
         # Draw
