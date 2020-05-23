@@ -1,4 +1,4 @@
-# Test pygame program
+# Implementation of Snake in pygame
 import pygame as pyg
 import random
 
@@ -17,6 +17,7 @@ def gen_food(snake, size_x, size_y, screen_x, screen_y):
                 sentinel = False
         if sentinel:
             break
+
     return x, y
 
 
@@ -25,12 +26,24 @@ pyg.font.init()
 font, endfont = pyg.font.SysFont("Arial", 10), pyg.font.SysFont("Arial", 20)
 screen_x = screen_y = 300
 screen = pyg.display.set_mode((screen_x, screen_y))
+red, green, blue = (200, 0, 0), (0, 200, 0), (0, 0, 200)
+size_x = size_y = 10
 pyg.display.update()
 pyg.display.set_caption("Boa")
 clock = pyg.time.Clock()
 
-red, green, blue = (200, 0, 0), (0, 200, 0), (0, 0, 200)
-size_x = size_y = 10
+
+def display(screen, snake, food_x, food_y):
+    screen.fill((0, 0, 0))
+    for x, y in snake:
+        pyg.draw.rect(screen, green, [x, y, size_x, size_y])
+    pyg.draw.rect(screen, red, [food_x, food_y, size_x, size_y])
+
+    for i in range(0, screen_x, 10):  # Border
+        pyg.draw.rect(screen, blue, [i, 0, size_x, size_y])
+        pyg.draw.rect(screen, blue, [i, screen_y - size_y, size_x, size_y])
+        pyg.draw.rect(screen, blue, [0, i, size_x, size_x])
+        pyg.draw.rect(screen, blue, [screen_x - size_x, i, size_x, size_y])
 
 
 def run_game():
@@ -56,14 +69,18 @@ def run_game():
                 quit()
             # Movement keys
             if event.type == pyg.KEYDOWN:
-                if (event.key == pyg.K_LEFT or event.key == pyg.K_a) and d_x <= 0:
-                    d_x, d_y = -size_x, 0
-                elif (event.key == pyg.K_RIGHT or event.key == pyg.K_d) and d_x >= 0:
-                    d_x, d_y = size_x, 0
-                elif (event.key == pyg.K_UP or event.key == pyg.K_w) and d_y <= 0:
-                    d_x, d_y = 0, -size_y
-                elif (event.key == pyg.K_DOWN or event.key == pyg.K_s) and d_y >= 0:
-                    d_x, d_y = 0, size_y
+                if (event.key == pyg.K_LEFT or event.key == pyg.K_a):
+                    if d_x <= 0:
+                        d_x, d_y = -size_x, 0
+                elif (event.key == pyg.K_RIGHT or event.key == pyg.K_d):
+                    if d_x >= 0:
+                        d_x, d_y = size_x, 0
+                elif (event.key == pyg.K_UP or event.key == pyg.K_w):
+                    if d_y <= 0:
+                        d_x, d_y = 0, -size_y
+                elif (event.key == pyg.K_DOWN or event.key == pyg.K_s):
+                    if d_y >= 0:
+                        d_x, d_y = 0, size_y
 
         # New segment position
         x, y = snake[len(snake) - 1]
@@ -90,17 +107,7 @@ def run_game():
             snake.pop(0)
 
         # Draw
-        screen.fill((0, 0, 0))
-        for x, y in snake:
-            pyg.draw.rect(screen, green, [x, y, size_x, size_y])
-        pyg.draw.rect(screen, red, [food_x, food_y, size_x, size_y])
-
-        for i in range(0, screen_x, 10):  # Border
-            pyg.draw.rect(screen, blue, [i, 0, size_x, size_y])
-            pyg.draw.rect(screen, blue, [i, screen_y - size_y, size_x, size_y])
-            pyg.draw.rect(screen, blue, [0, i, size_x, size_x])
-            pyg.draw.rect(screen, blue, [screen_x - size_x, i, size_x, size_y])
-
+        display(screen, snake, food_x, food_y)
         textsurface = font.render("Score: {}".format(score), False, (255, 255, 255))
         screen.blit(textsurface, (0, 0))
 
@@ -124,24 +131,10 @@ if __name__ == "__main__":
                 if event.type == pyg.KEYDOWN and event.key == pyg.K_r:
                     sentinel = False
 
-            screen.fill((0, 0, 0))
-            for x, y in snake:
-                pyg.draw.rect(screen, green, [x, y, size_x, size_y])
-            pyg.draw.rect(screen, red, [food_x, food_y, size_x, size_y])
-
-            for i in range(0, screen_x, 10):  # Border
-                pyg.draw.rect(screen, blue, [i, 0, size_x, size_y])
-                pyg.draw.rect(screen, blue, [i, screen_y - size_y, size_x, size_y])
-                pyg.draw.rect(screen, blue, [0, i, size_x, size_x])
-                pyg.draw.rect(screen, blue, [screen_x - size_x, i, size_x, size_y])
-
-            textsurface = endfont.render(
-                "Game Over! Score: {}".format(score), True, (255, 255, 255)
-            )
+            display(screen, snake, food_x, food_y)
+            textsurface = endfont.render("Game Over! Score: {}".format(score), True, (255, 255, 255))
             screen.blit(textsurface, textsurface.get_rect(center=(screen_x // 2, screen_y // 2)))
-            textsurface = endfont.render(
-                "Press R to restart", True, (255, 255, 255)
-            )
+            textsurface = endfont.render("Press R to restart", True, (255, 255, 255))
             screen.blit(textsurface, textsurface.get_rect(center=(screen_x // 2, screen_y // 2 + 20)))
 
             pyg.display.update()
