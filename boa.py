@@ -4,7 +4,7 @@ import random
 
 
 class Boa:
-    def __init__(self, screen_x = 300, screen_y = 300):
+    def __init__(self, screen_x=300, screen_y=300):
         pyg.init()
         pyg.font.init()
         self.font, self.endfont = pyg.font.SysFont("Arial", 10), pyg.font.SysFont("Arial", 20)
@@ -27,7 +27,6 @@ class Boa:
         self.gameover = False
         self.d_x, self.d_y = 0, -self.size_y
 
-
     def gen_food(self):
         # Generate new coords until one doesn't cause a collision
         while True:
@@ -35,6 +34,7 @@ class Boa:
                 random.randrange(self.size_x, self.screen_x - self.size_x, 10),
                 random.randrange(self.size_y, self.screen_y - self.size_y, 10),
             )
+
             sentinel = True
             for old_x, old_y in self.snake:
                 if sentinel and (old_x == x and old_y == y):
@@ -43,7 +43,6 @@ class Boa:
                 break
 
         self.food_x, self.food_y = x, y
-
 
     def display(self):
         self.screen.fill((0, 0, 0))
@@ -57,59 +56,12 @@ class Boa:
             pyg.draw.rect(self.screen, self.blue, [0, i, self.size_x, self.size_x])
             pyg.draw.rect(self.screen, self.blue, [self.screen_x - self.size_x, i, self.size_x, self.size_y])
 
-
-    # Return 3 tuples, each holding a boolean value in the order (Left, Right, Up, Down)
-    # First tuple says if there is a border adjacent to the snake head in that direction
-    # Second tuple says if there is a segment adjacent to the snake head in that direction
-    # Third tuple says if there is food in that direction
-    def get_features(self):
-        b_l = b_r = b_u = b_d = s_l = s_r = s_u = s_d = f_u = f_l = f_r = f_d = False
-        x, y = self.snake[-1]
-
-        # Border
-        if x == self.size_x:
-            b_l = True
-        elif x == self.screen_x - (2 * self.size_x):
-            b_r = True
-
-        if y == self.size_y:
-            b_u = True
-        elif y == self.screen_y - (2 * self.size_y):
-            b_d = True
-
-        # Segments
-        for x_, y_ in self.snake[:-1]:
-            if x_ + self.size_x == x:
-                s_l = True
-            elif x_ - self.size_x == x:
-                s_r = True
-
-            if y_ + self.size_y == y:
-                s_u = True
-            elif y_ - self.size_y == y:
-                s_d = True
-
-        # Food
-        if self.food_x > x:
-            f_r = True
-        elif self.food_x < x:
-            f_l = True
-
-        if self.food_y > y:
-            f_d = True
-        elif self.food_y < y:
-            f_u = True
-
-        return (b_l, b_r, b_u, b_d), (s_l, s_r, s_u, s_d), (f_l, f_r, f_u, f_d)
-
-
-    def get_keyboard_input(self):
+    def process_keyboard_input(self):
         for event in pyg.event.get():
             if event.type == pyg.QUIT:
                 pyg.quit()
                 quit()
-            # Movement keys
-            if event.type == pyg.KEYDOWN:
+            if event.type == pyg.KEYDOWN:  # Movement keys
                 if (event.key == pyg.K_LEFT or event.key == pyg.K_a):
                     self.get_input(0)
                 elif (event.key == pyg.K_RIGHT or event.key == pyg.K_d):
@@ -118,7 +70,6 @@ class Boa:
                     self.get_input(2)
                 elif (event.key == pyg.K_DOWN or event.key == pyg.K_s):
                     self.get_input(3)
-
 
     def get_input(self, input):
         if input == 0 and self.d_x <= 0:
@@ -130,14 +81,9 @@ class Boa:
         elif input == 3 and self.d_y >= 0:
             self.d_x, self.d_y = 0, self.size_y
 
-
-    # -1 for keyboard input, 0 for left, 1 for right, 2 for up, 3 for down
-    def step(self, tick=15, input=-1):
+    def step(self, tick=15):
         # Handle actions
-        if input == -1:
-            self.get_keyboard_input()
-        else:
-            self.get_input(input)
+        self.process_keyboard_input()
 
         # New segment position
         x, y = self.snake[-1]
@@ -159,10 +105,8 @@ class Boa:
         if self.eaten:
             self.gen_food()
             self.eaten = False
-            self.score += 100
+            self.score += 10
         else:
-            if self.score > 0:
-                self.score -= 1
             self.snake.pop(0)
 
         # Draw
@@ -179,7 +123,7 @@ if __name__ == "__main__":
     while True:
         game = Boa()
         while not game.gameover:
-            game.step(tick=tick, input=-1)
+            game.step(tick=tick)
 
         # Game over state
         sentinel = True
@@ -196,7 +140,6 @@ if __name__ == "__main__":
             game.screen.blit(textsurface, textsurface.get_rect(center=(game.screen_x // 2, game.screen_y // 2)))
             textsurface = game.endfont.render("Press R to restart", True, (255, 255, 255))
             game.screen.blit(textsurface, textsurface.get_rect(center=(game.screen_x // 2, game.screen_y // 2 + 20)))
-
 
             pyg.display.update()
             game.clock.tick(tick)
