@@ -28,7 +28,8 @@ class Boa:
         self.d_x, self.d_y = 0, -self.size_y
 
     def gen_food(self):
-        # Generate new coords until one doesn't cause a collision
+        """ Create x,y coords for food.
+            Generate new coords until one doesn't cause a collision. """
         while True:
             x, y = (
                 random.randrange(self.size_x, self.screen_x - self.size_x, 10),
@@ -45,6 +46,7 @@ class Boa:
         self.food_x, self.food_y = x, y
 
     def display(self):
+        """ Display the game. """
         self.screen.fill((0, 0, 0))
         for x, y in self.snake:
             pyg.draw.rect(self.screen, self.green, [x, y, self.size_x, self.size_y])
@@ -57,21 +59,23 @@ class Boa:
             pyg.draw.rect(self.screen, self.blue, [self.screen_x - self.size_x, i, self.size_x, self.size_y])
 
     def process_keyboard_input(self):
+        """ Fetch user input. """
         for event in pyg.event.get():
             if event.type == pyg.QUIT:
                 pyg.quit()
                 quit()
             if event.type == pyg.KEYDOWN:  # Movement keys
                 if (event.key == pyg.K_LEFT or event.key == pyg.K_a):
-                    self.get_input(0)
+                    self.process_input(0)
                 elif (event.key == pyg.K_RIGHT or event.key == pyg.K_d):
-                    self.get_input(1)
+                    self.process_input(1)
                 elif (event.key == pyg.K_UP or event.key == pyg.K_w):
-                    self.get_input(2)
+                    self.process_input(2)
                 elif (event.key == pyg.K_DOWN or event.key == pyg.K_s):
-                    self.get_input(3)
+                    self.process_input(3)
 
-    def get_input(self, input):
+    def process_input(self, input):
+        """ Handle user input. """
         if input == 0 and self.d_x <= 0:
             self.d_x, self.d_y = -self.size_x, 0
         elif input == 1 and self.d_x >= 0:
@@ -82,6 +86,7 @@ class Boa:
             self.d_x, self.d_y = 0, self.size_y
 
     def step(self, tick=15):
+        """ Simulate a single game step. """
         # Handle actions
         self.process_keyboard_input()
 
